@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 rm -f ~/.zshrc ~/.tmux.conf ~/.vimrc
 

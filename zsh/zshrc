@@ -10,6 +10,9 @@ compinit
 #allow tab completion in the middle of a word
 setopt COMPLETE_IN_WORD
 
+# Allow moving into directories without cd
+setopt AUTO_CD
+
 source ~/.antigen/antigen.zsh
 
 # Load the oh-my-zsh's library.
@@ -21,8 +24,6 @@ antigen bundle heroku
 antigen bundle pip
 antigen bundle lein
 antigen bundle command-not-found
-
-antigen bundle thewtex/tmux-mem-cpu-load
 
 # Syntax highlighting bundle.
 antigen bundle zsh-users/zsh-syntax-highlighting
