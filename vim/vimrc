@@ -82,6 +82,7 @@ set smartindent
 set tabstop=4
 set shiftwidth=4
 set expandtab
+set backspace=indent,eol,start
 
 imap ii <esc>
 set pastetoggle=<F2>
