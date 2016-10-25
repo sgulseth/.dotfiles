@@ -40,3 +40,6 @@ alias gl="git log --oneline --graph"
 # Exports
 export EDITOR="vim"
 export FLEETCTL_TUNNEL="coreos.aws.vglive.no"
+
+export NVM_DIR="/home/singulse/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
