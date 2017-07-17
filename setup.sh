@@ -15,6 +15,11 @@ if [ -f ~/.vimrc ]; then
     mv ~/.vimrc ~/.vimrc-old
 fi
 
+if [ -f ~/.psqlrc ]; then
+    echo "psqlrc file exists. Backing up."
+    mv ~/.psqlrc ~/.psqlrc-old
+fi
+
 if [ -d ~/.tmuxinator ]; then
     echo "tmuxinator dir exists. Backing up."
     mv ~/.tmuxinator ~/.tmuxinator-old
@@ -24,6 +29,7 @@ ln -s ~/.dotfiles/zsh/zshrc ~/.zshrc
 ln -s ~/.dotfiles/tmux/tmux.conf ~/.tmux.conf
 ln -s ~/.dotfiles/tmuxinator ~/.tmuxinator
 ln -s ~/.dotfiles/vim/vimrc ~/.vimrc
+ln -s ~/.dotfiles/psql/psqlrc ~/.psqlrc
 
 cd ~/.dotfiles/
 git submodule init
