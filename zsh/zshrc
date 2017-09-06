@@ -44,3 +44,5 @@ export HISTFILESIZE=-1
 
 export NVM_DIR="/home/singulse/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+
+[ -f ~/.zshrc-local ] && . ~/.zshrc-local

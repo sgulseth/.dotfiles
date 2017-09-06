@@ -25,11 +25,16 @@ if [ -d ~/.tmuxinator ]; then
     mv ~/.tmuxinator ~/.tmuxinator-old
 fi
 
+if [ ! -d ~/.antigen ]; then
+    git clone https://github.com/zsh-users/antigen.git ~/.antigen
+fi
+
 ln -s ~/.dotfiles/zsh/zshrc ~/.zshrc
 ln -s ~/.dotfiles/tmux/tmux.conf ~/.tmux.conf
 ln -s ~/.dotfiles/tmuxinator ~/.tmuxinator
 ln -s ~/.dotfiles/vim/vimrc ~/.vimrc
 ln -s ~/.dotfiles/psql/psqlrc ~/.psqlrc
+ln -s ~/.dotfiles/vim/vimrc_neocomplcache ~/.vim/.vimrc_neocomplcache
 
 cd ~/.dotfiles/
 git submodule init
