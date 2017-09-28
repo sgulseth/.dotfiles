@@ -41,6 +41,7 @@ alias gl="git log --oneline --graph"
 export EDITOR="vim"
 export HISTSIZE=-1
 export HISTFILESIZE=-1
+export PATH=$PATH:$HOME/.dotfiles/bin
 
 export NVM_DIR="/home/singulse/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
