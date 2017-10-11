@@ -29,6 +29,8 @@ if [ ! -d ~/.antigen ]; then
     git clone https://github.com/zsh-users/antigen.git ~/.antigen
 fi
 
+mkdir -p ~/.vim
+
 ln -s ~/.dotfiles/zsh/zshrc ~/.zshrc
 ln -s ~/.dotfiles/tmux/tmux.conf ~/.tmux.conf
 ln -s ~/.dotfiles/tmuxinator ~/.tmuxinator
