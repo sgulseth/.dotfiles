@@ -4,3 +4,6 @@
 [submodule "tmux/plugins/tpm"]
 	path = tmux/plugins/tpm
 	url = git@github.com:tmux-plugins/tpm.git
+[submodule "zsh/kubectl-aliases"]
+	path = zsh/kubectl-aliases
+	url = https://github.com/ahmetb/kubectl-aliases.git
