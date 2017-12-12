@@ -39,8 +39,8 @@ alias gl="git log --oneline --graph"
 
 # Exports
 export EDITOR="vim"
-export HISTSIZE=-1
-export HISTFILESIZE=-1
+export HISTSIZE=1000000000
+export HISTFILESIZE=1000000000
 export PATH=$PATH:$HOME/.dotfiles/bin
 
 export NVM_DIR="/home/singulse/.nvm"
