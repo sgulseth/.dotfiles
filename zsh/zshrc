@@ -46,4 +46,6 @@ export PATH=$PATH:$HOME/.dotfiles/bin
 export NVM_DIR="/home/singulse/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 
+alias git-branch-cleanup='git branch --merged | grep -v "\*" | grep -v master | grep -v dev | xargs -n 1 git branch -d'
+
 [ -f ~/.zshrc-local ] && . ~/.zshrc-local
