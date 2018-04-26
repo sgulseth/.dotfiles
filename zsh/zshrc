@@ -13,6 +13,9 @@ setopt COMPLETE_IN_WORD
 # Allow moving into directories without cd
 setopt AUTO_CD
 
+# oh-my-zsh plugins
+plugins=(git ssh-agent pass docker kubectl knife)
+
 source ~/.antigen/antigen.zsh
 
 # Load the oh-my-zsh's library.
@@ -24,6 +27,8 @@ antigen bundle heroku
 antigen bundle pip
 antigen bundle lein
 antigen bundle command-not-found
+antigen bundle thewtex/tmux-mem-cpu-load
+antigen bundle zsh-users/zsh-syntax-highlighting
 
 # Syntax highlighting bundle.
 antigen bundle zsh-users/zsh-syntax-highlighting
@@ -34,11 +39,9 @@ antigen theme afowler
 # Tell antigen that you're done.
 antigen apply
 
-# Aliases
-alias gl="git log --oneline --graph"
 
 # Exports
-export EDITOR="vim"
+export EDITOR="/usr/local/bin/vim"
 export HISTSIZE=1000000000
 export HISTFILESIZE=1000000000
 export PATH=$PATH:$HOME/.dotfiles/bin
@@ -46,6 +49,21 @@ export PATH=$PATH:$HOME/.dotfiles/bin
 export NVM_DIR="/home/singulse/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 
+# Aliases
+source ~/.dotfiles/zsh/kubectl-aliases/.kubectl_aliases
+
+alias gl="git log --oneline --graph"
 alias git-branch-cleanup='git branch --merged | grep -v "\*" | grep -v master | grep -v dev | xargs -n 1 git branch -d'
+func certinfo() {
+    echo | openssl s_client -showcerts -servername $1 -connect $1:443 2>/dev/null | openssl x509 -inform pem -noout -text
+}
+
+func rotate-mac-address() {
+    sudo ifconfig en0 ether `openssl rand -hex 6 | sed 's/\(..\)/\1:/g; s/.$//'`
+}
+
+func ssh-until() {
+    until ssh $@; do sleep 1; done;
+}
 
 [ -f ~/.zshrc-local ] && . ~/.zshrc-local
