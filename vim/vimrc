@@ -17,6 +17,7 @@ Plugin 'altercation/vim-colors-solarized'
 
 " Plugins
 Plugin 'scrooloose/nerdtree'
+Plugin 'Xuyuanp/nerdtree-git-plugin'
 Plugin 'kien/ctrlp.vim'
 if executable('ack')
   Plugin 'mileszs/ack.vim'
@@ -73,6 +74,7 @@ nnoremap <Leader>o :CtrlP<CR>
 nnoremap <Leader>w :w<CR>
 nnoremap <Leader>r :%s/\<<C-r><C-w>\>/
 nmap <silent> <Leader>f :NERDTreeToggle<CR>
+map <C-n> :NERDTreeToggle<CR>
 
 let g:bufferline_echo=0
 
@@ -113,6 +115,9 @@ map <esc>[1;5C <C-Right>
 " Open Nerdtree default
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+" autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
+" autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
 
 " Monokai theme
 " syntax enable
