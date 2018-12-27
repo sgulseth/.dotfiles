@@ -76,4 +76,6 @@ alias ls="ls -GF"
 
 [ -f ~/.zshrc-local ] && . ~/.zshrc-local
 
-[ -f $(which ccat) ] && alias cat=$(which ccat)
+if command -v ccat > /dev/null; then
+    alias cat=$(command -v ccat)
+fi
