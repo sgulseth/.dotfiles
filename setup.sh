@@ -42,3 +42,21 @@ cd ~/.dotfiles/
 git submodule init
 git submodule update
 vim +PluginInstall all
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    if ! [ -x "$(command -v ccat)" ]; then
+        brew install ccat
+    fi
+
+    if ! [ -x "$(command -v kube_ps1)" ]; then
+        brew install kube-ps1
+    fi
+
+    if ! [ -x "$(command -v kubetail)" ]; then
+        brew tap johanhaleby/kubetail && brew install kubetail
+    fi
+
+    if ! [ -x "$(command -v dive)" ]; then
+        brew install dive
+    fi
+fi

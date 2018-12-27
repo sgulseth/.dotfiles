@@ -1,0 +1,428 @@
+#!/usr/bin/perl
+# Copyright Audun Ytterdal <audun@ytterdal.net>
+# Licenced under GPL Version 2.
+
+=head1 NAME
+
+statpipe - swiss knife statistics
+
+=head1 DESCRIPTION
+
+statpipe is a excellent little tool to analyse logfiles, or any file
+for that matter, grep for stuff and produce percentage of hits, 
+hits per second and other cool stuff.
+It's supposed to be a better way of doing something similar to
+tail -f | awk | cut | sort | unique  -c |sort -g | whatever.
+
+=cut
+my $version="1.0";
+use Getopt::Long;
+#use gnu version of options
+Getopt::Long::Configure("gnu_getopt");
+#use Data::Dumper;
+use Time::HiRes qw( time );
+use Pod::Usage;
+# Unbuffered output
+$| = 1;
+# Catch Ctrl-C and friends
+$SIG{INT} = \&end_pipe;
+
+
+my $opt_linefreq  = 0;     # Default none
+my $opt_timefreq  = 1;     # Default every 1 second
+my $opt_maxtime   = 0;     # Default forever
+my $opt_maxlines  = 0;     # Default forever
+my $opt_maxkeys   = 50000; # Default 50000 unique keys before we stop
+my $opt_case      = 0;     # Default case insensetive
+my $opt_limit     = 0;     # Default output all keys
+my $opt_not       = 0;     # Default no not's
+my $opt_multi     = 0;     # Default only read once per line
+my $opt_field     = 0;     # Don't split fields by default
+my $opt_delimiter = '\s+'; # Default delimiter is one or more spaces
+my $opt_keysize   = 30;    # Default length of printed key
+my $opt_help      = 0;
+my $opt_version   = 0;
+my $opt_hits      = 1;     # Show hits per second
+my $opt_title     = 0;     # What title to use
+my $opt_clear     = 0;     # Don't clean screen between updates
+my $opt_relative=0;
+
+my $result = GetOptions(
+    "t|timefreq=i"  => \$opt_timefreq,   # how often do we update in time
+    "linefreq=i"    => \$opt_linefreq,   # how often do we update in lines
+    "maxtime=i"     => \$opt_maxtime,    # when to stop
+    "maxlines=i"    => \$opt_maxlines,   # when to stop
+    "maxkeys=i"     => \$opt_maxkeys,    # maxkeys (default 5000)
+    "l|limit=i"     => \$opt_limit,      # how many do we print
+    "n|not=s"       => \$opt_not,        # Not these
+    "m|multi"       => \$opt_multi,      # Multimatch for each line
+    "s|case"        => \$opt_case,       # key sensetive?
+    "c|clear"       => \$opt_clear,      # clear and updatescreen?
+    "f|field=s"     => \$opt_field,      # what field to use?
+    "d|delimiter=s" => \$opt_delimiter,  # What delimiter to use
+    "r|relative!"   => \$opt_relative,   # show relative percentages for hits
+    "k|keysize=i"   => \$opt_keysize,    # What delimiter to use
+    "hits!"         => \$opt_hits,       # show hits/s
+    "h|help"        => \$opt_help,       # Print help
+    "title=s"       => \$opt_title,      # What title to use
+    "v|version"     => \$opt_version     # Print version
+);
+
+if (!$result) {
+    $opt_help=1;
+}
+
+=head1 SYNOPSIS
+
+tail -f some.log  | statpipe [options] [regex] ... [regex]
+
+Regex is a perl regex, if the regex has a group 'something\.(.*)' the
+match will be used as a key instead of the regexp itself.
+
+If no regex and no --field argument is given. It will be as '^(.*)$' was given.
+Meaning that it will count all unique lines in the file/pipe.
+
+ Options:
+  --field|f         What field top use as key (default all fields)
+  --delimiter|d     What delimiter to use for fields (spaces)
+  --timefreq|-t     Frequency of output in seconds (1 second)
+  --linefreq        Frequency of output in lines (none)
+  --maxtime         Time before closing the pipe in seconds (unlimited)
+  --maxlines        Maximum numbers of lines to parse (unlimited)
+  --multi|m         Match multiple times per line (no)
+  --limit           Limit output of keys (0)
+  --maxkeys         Max number of unique keys (50000)
+  --not|n           Exclude lines with regex
+  --case|s          Be casesensetive
+  --clear           Clear screen between updates
+  --relative|r      Show relative percentages (no)
+  --keysize|k       Length of keys (output)
+  --(no)hits        Show hits per second (yes)
+  --title           Optional title
+  --help            Show help
+  --version         Show version
+
+=cut
+
+if ($opt_help) {
+    close STDIN;
+    pod2usage("statpipe $version by Audun Ytterdal <audun\@ytterdal.net>\n");
+    exit;
+}
+
+if ($opt_version) {
+    print "$version\n";
+    exit(0);
+}
+
+# The hash where we store objects
+my $objects;
+
+# counters
+my $freqcount = 0;
+my $starttime = time();
+my $freqtime  = $starttime;
+my $lines     = 0;
+my $keys      = 0;
+my $hitcount  = 0;
+my $restcount  = 0;
+my $hitflag=0;
+my $now = time();
+
+
+while (<STDIN>) {
+    $hitflag=0;
+    $now = time();
+    $lines++;
+    if ($opt_maxkeys) {
+        $keys = scalar (keys %$objects);
+
+        if ($keys >= $opt_maxkeys) {
+            print "Maxkeys ($opt_maxkeys) reached\n";
+            &end_pipe;
+        }
+    }
+    if ($opt_maxtime) {
+        if ($now - $starttime >= $opt_maxtime) {
+            print "Maxtime of $opt_maxtime seconds reached.\n";
+            &end_pipe;
+        }
+    }
+    if ($opt_maxlines) {
+        if ($lines > $opt_maxlines) {
+            print "Maxlines of $opt_maxlines reached.\n\n";
+            &end_pipe;
+        }
+    }
+    my $line = $_;
+    chomp $line;            # remove trailing newlines
+
+    # if field is specified, use that instead of complete line
+    if ($opt_field) {
+        my @fields    = split(",",$opt_field);
+        my @fieldlist = split(/$opt_delimiter/,$line);
+        my $object;
+        for my $field (@fields) {
+            $object .= "$fieldlist[($field-1)] ";
+        }
+        # Delete trailing space
+        chop($object);
+        $line=$object;
+    }
+
+
+    # skip lines that the user does not want
+    if ($opt_not) {
+        if ($opt_case) {
+            if ($line =~ m/$opt_not/) {
+                $restcount++;
+                next;
+            }
+        } else {
+            if ($line =~ m/$opt_not/i) {
+                $restcount++;
+                next;
+            }
+        }
+    }
+
+    # Magic starts here
+    for my $reg (@ARGV) { # for each regex
+        if ($opt_multi) {  # Using multi match?
+            my @linehits;
+            if ($opt_case) {
+                if (@linehits = $line =~ m/$reg/g ) {
+                    $hitflag=1;
+                    foreach my $linehit (@linehits) {
+                        $hitcount++;
+                        if ($1) {
+                            $objects->{$linehit}++;    # add match as key
+                        } else {
+                            $objects->{$reg}++;  # add regex as key
+                        }
+                    }
+                }
+            } else {
+                # Caseinsensetiv is the default
+                if ( @linehits = $line =~ m/$reg/ig ) {
+                    $hitflag=1;
+                    foreach my $linehit (@linehits) {
+                        $hitcount++;
+                        if ($1) {
+                            $objects->{$linehit}++;    # add match as key
+                        } else {
+                            $objects->{$reg}++;  # add regex as key
+                        }
+                    }
+                }
+            }
+            # Default is not using multi match
+        } else {
+            if ($opt_case) {
+                if (  $line =~ m/$reg/ ) {
+                    $hitcount++;
+                    $hitflag=1;
+                    if ($1) {
+                        $objects->{$1}++;    # add match as key
+                    } else {
+                        $objects->{$reg}++;  # add regex as key
+                    }
+                }
+            }
+            else {
+                if ( $line =~ m/$reg/i ) {   # caseinsensetive is default
+                    $hitcount++;
+                    $hitflag=1;
+                    if ($1) {
+                        $objects->{$1}++;    # add match as key
+                    } else {
+                        $objects->{$reg}++;  # add regexp as key
+                    }
+                }
+            }
+        }
+    }
+    if ( !@ARGV ) {    # we didn't send regexp, count every line
+        $hitcount++;
+        $objects->{$line}++;
+        $hitflag=1;
+    }
+    $freqcount++;
+    if ($opt_linefreq) {    # print out every <n> lines
+        printout( $objects, $lines, $starttime ) if ( $freqcount >= $opt_linefreq );
+        $freqcount = 0;
+    }
+    if ($opt_timefreq) {    # print out every <n> seconds
+        if ( time() - $freqtime >= $opt_timefreq ) {
+            printout( $objects, $lines, $starttime );
+            $freqtime = time();
+        }
+
+    }
+    if (!$hitflag) {
+        $restcount++;
+    }
+
+}
+&end_pipe;                  # we only get here if the pipe is closed.
+
+sub printout {
+    my ( $objects, $lines, $starttime ) = @_;
+    my $diff   = time() - $starttime;
+    my $limit  = 0;
+    my $hitlimit;
+    my $limitedhits = 0;
+    my $divider=1;
+    if ($opt_clear) {       # if set, clear screen between prints
+        my $clear = `tput clear`;
+        print $clear;
+    }
+    if ($opt_title) {  # if set, print a header row
+        print "$opt_title\n";
+    }
+    # sort the hash values and print descending
+    for my $reg ( sort { $objects->{$b} <=> $objects->{$a} } keys %$objects ) {
+        if ($opt_relative) {
+            $divider=$hitcount;
+        } else {
+            $divider=$lines;
+        }
+        if ( !$hitlimit ) {    # only print untill we hit the limit
+            if ($opt_hits) {
+                printf(
+                    "%-".$opt_keysize."s: (%-4.1f%%) (%.1f h/s) (%d/%d)\n",
+                    $reg,
+                    ( $objects->{$reg} / $divider ) * 100,
+                    $objects->{$reg} / $diff,
+                    $objects->{$reg}, $lines
+                );
+            }
+            else {
+                printf(
+                    "%-".$opt_keysize."s: (%-4.1f%%) (%d/%d)\n",
+                    $reg, ( $objects->{$reg} / $divider ) * 100,
+                    $objects->{$reg}, $lines
+                );
+            }
+        }
+        else {
+            $limitedhits += $objects->{$reg};
+        }
+        $limit++;
+        if ( $opt_limit && $limit >= $opt_limit ) {
+            $hitlimit++;
+        }
+    }
+    if ($hitlimit) {
+        if ($opt_hits) {
+            printf(
+                "%-".$opt_keysize."s: (%-4.1f%%) (%.1f h/s) (%d(%d)/%d)\n",
+                "<limited>",
+                ( $limitedhits / $divider ) * 100,
+                $limitedhits / $diff,
+                $limitedhits, $hitlimit, $lines
+            );
+        }
+        else {
+            printf(
+                "%-".$opt_keysize."s: (%-4.1f%%) (%d(%d)/%d)\n",
+                "<limited>", ( $limitedhits / $divider ) * 100,
+                $limitedhits, $hitlimit, $lines
+            );
+        }
+    }
+    if ($opt_hits) {
+        printf(
+            "%-".$opt_keysize."s: (%-4.1f%%) (%.1f h/s) (%d/%d)\n",
+            "<total keys: " . scalar (keys(%$objects)) . ">",
+            ($hitcount / $divider) * 100,
+            $hitcount / $diff,
+            $hitcount, $lines
+        );
+    }
+    else {
+        printf(
+            "%-".$opt_keysize."s: (%.1f%%) (%d/%d)\n",
+            "<total keys: " . scalar (keys(%$objects)) . ">",
+            ($hitcount / $divider) * 100,
+            $hitcount, $lines
+        );
+    }
+
+    if ($restcount) {
+        if ($opt_hits) {
+            printf(
+                "%-".$opt_keysize."s: (%-4.1f%%) (%.1f h/s) (%d/%d)\n",
+                "<rest>",
+                ( $restcount / $divider ) * 100,
+                $restcount / $diff,
+                $restcount, $lines
+            );
+        }
+        else {
+            printf(
+                "%-".$opt_keysize."s: (%-4.1f%%) (%d/%d)\n",
+                "<rest>", ( $rest / $divider ) * 100,
+                $rest, $lines
+            );
+        }
+    }
+    print "\n";
+}
+
+sub end_pipe {
+    if (!$lines) {
+        print "No lines parsed, did you feed me through a pipe?\n";
+        pod2usage("statpipe $version by Audun Ytterdal <audun\@ytterdal.net>\n");
+        exit(0);
+    }
+    print "\n";
+    printout( $objects, $lines, $starttime );
+    my $diff = time() - $starttime;
+    printf( "Parsed %d lines in %.2f secs (%.1f lines/s)\n",
+        $lines, $diff, $lines / $diff );
+    exit;
+}
+
+=head1 EXAMPLES
+
+ #Show top 30 visited urls. Update it every 5 seconds for 60 seconds (default)
+ $ tail -f /var/log/httpd/access.log | statpipe -f 7
+
+ #Seperate fields by " and show field two
+ $ tail -f /var/log/httpd/access.log | statpipe -d \" -f 2
+
+ #Group jpeg and jpg differently
+ $ tail -f /var/log/httpd/access.log | statpipe 'jpe?g' png gif
+
+ #Group jpeg and jpg into one key
+ $ tail -f /var/log/httpd/access.log | statpipe '(jpe?g)' png gif --not gift
+
+ #Count all words in a file
+ $ cat file | statpipe --multi '(\w)'
+
+ #List top 20 articles the last 10 seconds
+ $ tail -f /var/log/httpd/access.log | statpipe 'artid=(\d+)' --maxtime=10 --limit 20 --time=0
+
+
+=head1 BUGS
+
+Probably plenty.
+
+=head1 TODO
+
+TODO: Merge ($1) ($2) etc.
+TODO: Name change: PMS? (Poor mans Splunk) (Pipe measure system), statpipe
+TODO: Read defaultsfile from .statpipe?
+TODO: Rare, reverse list
+TODO: Threads (use threads) for output
+TODO: Freqreset. REset numbers every X secons
+TODO: Scriptfilter on output (geoip etc)
+TODO: Fields in the form of -f-1 or -f2, 
+
+=head1 COPYRIGHT
+
+Audun Ytterdal <audun@ytterdal.net>
+http://github.com/auduny/statpipe/
+
+=cut

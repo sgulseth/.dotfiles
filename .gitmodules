@@ -7,3 +7,9 @@
 [submodule "zsh/kubectl-aliases"]
 	path = zsh/kubectl-aliases
 	url = https://github.com/ahmetb/kubectl-aliases.git
+[submodule "zsh/kube-ps1"]
+	path = zsh/kube-ps1
+	url = https://github.com/jonmosco/kube-ps1.git
+[submodule "dependencies/lsix"]
+	path = dependencies/lsix
+	url = https://github.com/hackerb9/lsix.git
