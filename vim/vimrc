@@ -13,7 +13,7 @@ Plugin 'gmarik/Vundle.vim'
 
 " Colors
 Plugin 'flazz/vim-colorschemes'
-Plugin 'altercation/vim-colors-solarized'
+" Plugin 'altercation/vim-colors-solarized'
 
 " Plugins
 Plugin 'scrooloose/nerdtree'
@@ -100,6 +100,7 @@ set smartindent
 set tabstop=4
 set shiftwidth=4
 set expandtab
+set softtabstop=0
 
 imap ii <esc>
 set pastetoggle=<F2>
@@ -178,3 +179,6 @@ set ts=4 sw=4
 " set ts=2 sw=2 filetype=h
 
 let g:syntastic_javascript_checkers = ['eslint']
+
+syn match Tab "\t"
+hi def Tab ctermbg=darkgreen guibg=#003000
