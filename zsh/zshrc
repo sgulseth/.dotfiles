@@ -13,8 +13,11 @@ setopt COMPLETE_IN_WORD
 # Allow moving into directories without cd
 setopt AUTO_CD
 
+# Remove command lines from the history list when the first character on the line is a space, or when one of the expanded aliases contains a leading space
+setopt histignorespace
+
 # oh-my-zsh plugins
-plugins=(git ssh-agent pass docker kubectl knife)
+plugins=(git ssh-agent docker kubectl)
 
 source ~/.antigen/antigen.zsh
 
@@ -23,12 +26,14 @@ antigen use oh-my-zsh
 
 # Bundles from the default repo (robbyrussell's oh-my-zsh).
 antigen bundle git
-antigen bundle heroku
+#antigen bundle heroku
 antigen bundle pip
-antigen bundle lein
+#antigen bundle lein
 antigen bundle command-not-found
 antigen bundle thewtex/tmux-mem-cpu-load
 antigen bundle zsh-users/zsh-syntax-highlighting
+#antigen bundle skywind3000/z.lua
+antigen bundle fasd
 
 # Syntax highlighting bundle.
 antigen bundle zsh-users/zsh-syntax-highlighting
@@ -45,16 +50,21 @@ export EDITOR="/usr/local/bin/vim"
 export HISTSIZE=1000000000
 export HISTFILESIZE=1000000000
 export PATH=$PATH:/usr/local/bin:$HOME/.dotfiles/bin
-
-export NVM_DIR="/home/singulse/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+export GOPROXY=https://proxy.golang.org
 
 # Aliases
 source ~/.dotfiles/zsh/kubectl-aliases/.kubectl_aliases
 source ~/.dotfiles/zsh/kube-ps1/kube-ps1.sh
 
 alias gl="git log --oneline --graph"
+alias gd="git diff -- ':!package-lock.json' ':!yarn.lock'"
 alias git-branch-cleanup='git branch --merged | grep -v "\*" | grep -v master | grep -v dev | xargs -n 1 git branch -d'
+alias git-root='cd $(git rev-parse --show-toplevel)'
+
+func wgo() {
+  cd $GOPATH/src/$@
+}
+
 func certinfo() {
     echo | openssl s_client -showcerts -servername $1 -connect $1:443 2>/dev/null | openssl x509 -inform pem -noout -text
 }
@@ -69,13 +79,59 @@ func ssh-until() {
 
 func gen-pass() {
     LENGTH=${1:-20}
-    LC_ALL=C; cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $LENGTH | head -n 1
+    LC_ALL=C; LC_CTYPE=C; cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $LENGTH | head -n 1
 }
 
-alias ls="ls -GF"
+func hess() {
+    http --pretty=all --print=hb "$@" | less -R;
+}
+
+func b64e() {
+  VAL=$(echo -n $@ | base64)
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    echo $VAL | pbcopy
+  fi
+
+  echo $VAL
+}
+
+func b64d() {
+  VAL=$(echo -n $@ | base64 --decode)
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    echo $VAL | pbcopy
+  fi
+
+  echo $VAL
+}
+
+if command -v exa > /dev/null; then
+    alias ls="exa --long --header --extended --git"
+else
+    alias ls="ls -GF"
+fi
 
 [ -f ~/.zshrc-local ] && . ~/.zshrc-local
 
 if command -v ccat > /dev/null; then
     alias cat=$(command -v ccat)
+fi
+
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+
+func kebug() {
+  kubectl -n default run --generator=run-pod/v1 \
+    sindre-tmp-shell \
+    --rm \
+    -i \
+    --tty \
+    --image sgulseth/kebug -- /bin/bash
+}
+
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+
+export VOLTA_HOME="$HOME/.volta"
+if [ -s "$VOLTA_HOME/load.sh" ]; then
+  . "$VOLTA_HOME/load.sh"
+  export PATH="$VOLTA_HOME/bin:$PATH"
 fi
