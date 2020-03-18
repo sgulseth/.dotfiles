@@ -30,6 +30,7 @@ if [ ! -d ~/.antigen ]; then
 fi
 
 mkdir -p ~/.vim
+mkdir -p ~/.config
 
 ln -s ~/.dotfiles/zsh/zshrc ~/.zshrc
 ln -s ~/.dotfiles/tmux/tmux.conf ~/.tmux.conf
@@ -37,6 +38,7 @@ ln -s ~/.dotfiles/tmuxinator ~/.tmuxinator
 ln -s ~/.dotfiles/vim/vimrc ~/.vimrc
 ln -s ~/.dotfiles/psql/psqlrc ~/.psqlrc
 ln -s ~/.dotfiles/vim/vimrc_neocomplcache ~/.vim/.vimrc_neocomplcache
+ln -s ~/.dotfiles/nvim ~/.config/nvim
 
 cd ~/.dotfiles/
 git submodule init
