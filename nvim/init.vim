@@ -19,11 +19,11 @@ call plug#end()
 
 
 " Nerdtree bindings
-nnoremap <silent> <C-k><C-B> :NERDTreeToggle<CR>
-augroup nerdtree_open
-    autocmd!
-    autocmd VimEnter * NERDTree | wincmd p
-augroup END
+nnoremap <silent> <C-b> :NERDTreeToggle<CR>
+"augroup nerdtree_open
+"    autocmd!
+"    autocmd VimEnter * NERDTree | wincmd p
+"augroup END
 " Nerdtree bindings
 
 
