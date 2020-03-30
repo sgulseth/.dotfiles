@@ -56,37 +56,40 @@ export GOPROXY=https://proxy.golang.org
 source ~/.dotfiles/zsh/kubectl-aliases/.kubectl_aliases
 source ~/.dotfiles/zsh/kube-ps1/kube-ps1.sh
 
+#KUBE_PS1_SYMBOL_DEFAULT='' KUBE_PS1_PREFIX='' KUBE_PS1_SUFFIX='' KUBE_PS1_SEPARATOR='' RPROMPT='%{${fg[blue]}%}k8s%{$reset_color%}:$(kube_ps1)'
+KUBE_PS1_SYMBOL_DEFAULT='' KUBE_PS1_PREFIX="%{${fg[blue]}%}k8s%{$reset_color%}:" KUBE_PS1_SUFFIX='' KUBE_PS1_SEPARATOR='' RPROMPT='$(kube_ps1)'
+
 alias gl="git log --oneline --graph"
 alias gd="git diff -- ':!package-lock.json' ':!yarn.lock'"
 alias git-branch-cleanup='git branch --merged | grep -v "\*" | grep -v master | grep -v dev | xargs -n 1 git branch -d'
 alias git-root='cd $(git rev-parse --show-toplevel)'
 
-func wgo() {
+wgo() {
   cd $GOPATH/src/$@
 }
 
-func certinfo() {
+certinfo() {
     echo | openssl s_client -showcerts -servername $1 -connect $1:443 2>/dev/null | openssl x509 -inform pem -noout -text
 }
 
-func rotate-mac-address() {
+rotate-mac-address() {
     sudo ifconfig en0 ether `openssl rand -hex 6 | sed 's/\(..\)/\1:/g; s/.$//'`
 }
 
-func ssh-until() {
+ssh-until() {
     until ssh $@; do sleep 1; done;
 }
 
-func gen-pass() {
+gen-pass() {
     LENGTH=${1:-20}
     LC_ALL=C; LC_CTYPE=C; cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $LENGTH | head -n 1
 }
 
-func hess() {
+hess() {
     http --pretty=all --print=hb "$@" | less -R;
 }
 
-func b64e() {
+b64e() {
   VAL=$(echo -n $@ | base64)
   if [[ "$OSTYPE" == "darwin"* ]]; then
     echo $VAL | pbcopy
@@ -95,7 +98,7 @@ func b64e() {
   echo $VAL
 }
 
-func b64d() {
+b64d() {
   VAL=$(echo -n $@ | base64 --decode)
   if [[ "$OSTYPE" == "darwin"* ]]; then
     echo $VAL | pbcopy
@@ -119,7 +122,7 @@ fi
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 
-func kebug() {
+kebug() {
   kubectl -n default run --generator=run-pod/v1 \
     sindre-tmp-shell \
     --rm \
@@ -130,8 +133,9 @@ func kebug() {
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
-export VOLTA_HOME="$HOME/.volta"
-if [ -s "$VOLTA_HOME/load.sh" ]; then
-  . "$VOLTA_HOME/load.sh"
-  export PATH="$VOLTA_HOME/bin:$PATH"
-fi
+
+export VOLTA_HOME="/Users/sgulseth/.volta"
+export PATH="$VOLTA_HOME/bin:$PATH"
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"
