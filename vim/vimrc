@@ -50,6 +50,9 @@ Plugin 'pangloss/vim-javascript'
 Plugin 'elzr/vim-json'
 Plugin 'othree/html5.vim'
 Plugin 'cakebaker/scss-syntax.vim'
+Plugin 'leafgarland/typescript-vim'
+Plugin 'ianks/vim-tsx'
+Plugin 'Quramy/tsuquyomi'
 
 
 " All of your Plugins must be added before the following line
@@ -182,3 +185,7 @@ let g:syntastic_javascript_checkers = ['eslint']
 
 syn match Tab "\t"
 hi def Tab ctermbg=darkgreen guibg=#003000
+
+" typescript
+autocmd FileType typescript setlocal formatprg=prettier\ --parser\ typescript
+
