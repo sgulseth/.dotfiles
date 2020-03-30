@@ -52,13 +52,14 @@ export HISTFILESIZE=1000000000
 export PATH=$PATH:/usr/local/bin:$HOME/.dotfiles/bin
 export GOPROXY=https://proxy.golang.org
 
-# Aliases
-source ~/.dotfiles/zsh/kubectl-aliases/.kubectl_aliases
+# kube-ps1
+KUBE_PS1_SYMBOL_DEFAULT='' KUBE_PS1_PREFIX="%{${fg[blue]}%}k8s%{$reset_color%}:" KUBE_PS1_SUFFIX='' KUBE_PS1_SEPARATOR='' RPROMPT='$(kube_ps1)'
 source ~/.dotfiles/zsh/kube-ps1/kube-ps1.sh
 
-#KUBE_PS1_SYMBOL_DEFAULT='' KUBE_PS1_PREFIX='' KUBE_PS1_SUFFIX='' KUBE_PS1_SEPARATOR='' RPROMPT='%{${fg[blue]}%}k8s%{$reset_color%}:$(kube_ps1)'
-KUBE_PS1_SYMBOL_DEFAULT='' KUBE_PS1_PREFIX="%{${fg[blue]}%}k8s%{$reset_color%}:" KUBE_PS1_SUFFIX='' KUBE_PS1_SEPARATOR='' RPROMPT='$(kube_ps1)'
+# Aliases
+source ~/.dotfiles/zsh/kubectl-aliases/.kubectl_aliases
 
+alias kdiff="kitty +kitten diff"
 alias gl="git log --oneline --graph"
 alias gd="git diff -- ':!package-lock.json' ':!yarn.lock'"
 alias git-branch-cleanup='git branch --merged | grep -v "\*" | grep -v master | grep -v dev | xargs -n 1 git branch -d'
@@ -130,6 +131,8 @@ kebug() {
     --tty \
     --image sgulseth/kebug -- /bin/bash
 }
+
+alias d="kitty +kitten diff"
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
