@@ -15,8 +15,21 @@ Plug 'leafgarland/typescript-vim'
 Plug 'ianks/vim-tsx'
 Plug 'Quramy/tsuquyomi'
 
+" Golang
+Plug 'fatih/vim-go'
+Plug 'godoctor/godoctor.vim'
+
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'zchee/deoplete-go', {'build': {'unix': 'make'}}
+Plug 'jodosha/vim-godebug' " Debugger integration via delve
+
 call plug#end()
 
+
+let g:deoplete#enable_at_startup = 1
+set tabstop=4
+set shiftwidth=4
+set expandtab
 
 " Nerdtree bindings
 nnoremap <silent> <C-b> :NERDTreeToggle<CR>
