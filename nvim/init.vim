@@ -1,6 +1,7 @@
 call plug#begin('~/.config/nvim/plug')
 
 Plug 'scrooloose/nerdtree'
+Plug 'preservim/nerdcommenter'
 Plug 'liuchengxu/space-vim-dark'
 Plug 'ctrlpvim/ctrlp.vim'
 if executable('ack')
@@ -14,6 +15,8 @@ Plug 'othree/html5.vim'
 Plug 'leafgarland/typescript-vim'
 Plug 'ianks/vim-tsx'
 Plug 'Quramy/tsuquyomi'
+Plug 'chrisbra/Colorizer'
+Plug 'evanleck/vim-svelte', {'branch': 'main'}
 
 " Golang
 Plug 'fatih/vim-go'
@@ -30,6 +33,8 @@ let g:deoplete#enable_at_startup = 1
 set tabstop=4
 set shiftwidth=4
 set expandtab
+
+let g:loaded_python_provider = 0
 
 " Nerdtree bindings
 nnoremap <silent> <C-b> :NERDTreeToggle<CR>

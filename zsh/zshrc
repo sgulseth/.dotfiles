@@ -26,13 +26,11 @@ antigen use oh-my-zsh
 
 # Bundles from the default repo (robbyrussell's oh-my-zsh).
 antigen bundle git
-#antigen bundle heroku
 antigen bundle pip
 #antigen bundle lein
 antigen bundle command-not-found
 antigen bundle thewtex/tmux-mem-cpu-load
 antigen bundle zsh-users/zsh-syntax-highlighting
-#antigen bundle skywind3000/z.lua
 antigen bundle clvv/fasd
 
 # Syntax highlighting bundle.
@@ -46,15 +44,20 @@ antigen apply
 
 
 # Exports
-export EDITOR="/usr/local/bin/vim"
+export EDITOR="/usr/local/bin/nvim"
 export HISTSIZE=1000000000
 export HISTFILESIZE=1000000000
 export PATH=$PATH:/usr/local/bin:$HOME/.dotfiles/bin
 export GOPROXY=https://proxy.golang.org
 
 # kube-ps1
-KUBE_PS1_SYMBOL_DEFAULT='' KUBE_PS1_PREFIX="%{${fg[blue]}%}k8s%{$reset_color%}:" KUBE_PS1_SUFFIX='' KUBE_PS1_SEPARATOR='' RPROMPT='$(kube_ps1)'
-source ~/.dotfiles/zsh/kube-ps1/kube-ps1.sh
+#KUBE_PS1_SYMBOL_DEFAULT='' \
+#    KUBE_PS1_PREFIX="%{${fg[blue]}%}k8s%{$reset_color%}" \
+#    KUBE_PS1_SUFFIX='' \
+#    KUBE_PS1_SEPARATOR='' \
+#    RPROMPT='$(kube_ps1) [%D{%L:%M:%S}]'
+#source ~/.dotfiles/zsh/kube-ps1/kube-ps1.sh
+
 
 # Aliases
 source ~/.dotfiles/zsh/kubectl-aliases/.kubectl_aliases
@@ -62,13 +65,11 @@ source ~/.dotfiles/zsh/kubectl-aliases/.kubectl_aliases
 alias kdiff="kitty +kitten diff"
 alias gl="git log --oneline --graph"
 alias gd="git diff -- ':!package-lock.json' ':!yarn.lock'"
-alias git-branch-cleanup='git branch --merged | grep -v "\*" | grep -v master | grep -v dev | xargs -n 1 git branch -d'
 alias git-root='cd $(git rev-parse --show-toplevel)'
 
-wgo() {
-  cd $GOPATH/src/$@
+git-branch-cleanup() {
+    git branch --merged | grep -v "\*" | grep -v master | grep -v dev | grep -v staging | grep -v main | xargs -n 1 git branch -d
 }
-
 certinfo() {
     echo | openssl s_client -showcerts -servername $1 -connect $1:443 2>/dev/null | openssl x509 -inform pem -noout -text
 }
@@ -137,8 +138,6 @@ alias d="kitty +kitten diff"
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
 
-export VOLTA_HOME="/Users/sgulseth/.volta"
-export PATH="$VOLTA_HOME/bin:$PATH"
 
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"

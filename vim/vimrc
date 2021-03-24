@@ -33,6 +33,7 @@ Plugin 'Shougo/neocomplcache.vim'
 Plugin 'myusuf3/numbers.vim'
 Plugin 'bling/vim-bufferline'
 Plugin 'Raimondi/delimitMate'
+Plugin 'chrisbra/Colorizer'
 if executable('tmux')
     Plugin 'christoomey/vim-tmux-navigator'
 endif
@@ -53,6 +54,7 @@ Plugin 'cakebaker/scss-syntax.vim'
 Plugin 'leafgarland/typescript-vim'
 Plugin 'ianks/vim-tsx'
 Plugin 'Quramy/tsuquyomi'
+Plugin 'evanleck/vim-svelte'
 
 
 " All of your Plugins must be added before the following line
