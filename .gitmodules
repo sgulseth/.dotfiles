@@ -13,3 +13,6 @@
 [submodule "dependencies/lsix"]
 	path = dependencies/lsix
 	url = https://github.com/hackerb9/lsix.git
+[submodule "nvchad"]
+	path = nvchad
+	url = https://github.com/NvChad/NvChad

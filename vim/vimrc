@@ -70,12 +70,18 @@ filetype plugin indent on    " required
 " :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
 "
 " see :h vundle for more details or wiki for FAQ
+" 
 " Put your non-Plugin stuff after this line
 "
 
 
-let mapleader = "\<Space>"
+"nnoremap <SPACE> <Nop>
+"let mapleader = "\<Space>"
+"map <SPACE> <leader>
+let mapleader=";"
+
 nnoremap <Leader>o :CtrlP<CR>
+
 nnoremap <Leader>w :w<CR>
 nnoremap <Leader>r :%s/\<<C-r><C-w>\>/
 nmap <silent> <Leader>f :NERDTreeToggle<CR>
