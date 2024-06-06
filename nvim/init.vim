@@ -33,6 +33,7 @@ Plug 'editorconfig/editorconfig-vim'
 "Plug 'ianks/vim-tsx'
 "Plug 'Quramy/tsuquyomi'
 Plug 'chrisbra/Colorizer'
+Plug 'google/vim-jsonnet'
 
 " Golang
 "Plug 'fatih/vim-go'

@@ -37,7 +37,9 @@ antigen bundle clvv/fasd
 antigen bundle zsh-users/zsh-syntax-highlighting
 
 # Load the theme.
-antigen theme afowler
+#antigen theme afowler
+
+antigen theme sgulseth/.dotfiles zsh/themes/sindre
 
 # Tell antigen that you're done.
 antigen apply
@@ -49,6 +51,7 @@ export HISTSIZE=1000000000
 export HISTFILESIZE=1000000000
 export PATH=$PATH:/usr/local/bin:$HOME/.dotfiles/bin
 export GOPROXY=https://proxy.golang.org
+export HOMEBREW_NO_AUTO_UPDATE=1
 
 # kube-ps1
 #KUBE_PS1_SYMBOL_DEFAULT='' \
@@ -134,8 +137,7 @@ kebug() {
 }
 
 k-pod-ips () {
-    kubectl get -o=jsonpath='{range .items[*]}{.status.podIP}{"	"}{.metadata.name}{"
-"}{end}' pods $@
+    kubectl get -o=jsonpath='{range .items[*]}{.status.podIP}{"	"}{.metadata.name}{"\n"}{end}' pods $@
 }
 
 alias d="kitty +kitten diff"
@@ -154,9 +156,23 @@ lg() {
     fi
 }
 
+export XDG_CONFIG_HOME=$HOME/.config
+
 
 
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
 export VOLTA_HOME="$HOME/.volta"
 export PATH="$VOLTA_HOME/bin:$PATH"
+
+# bun completions
+[ -s "/Users/sgulseth/.bun/_bun" ] && source "/Users/sgulseth/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+[[ -s "/Users/sgulseth/.gvm/scripts/gvm" ]] && source "/Users/sgulseth/.gvm/scripts/gvm"
+
+# to make watch work with alises, *shrug* https://unix.stackexchange.com/questions/25327/watch-command-alias-expansion
+alias watch='watch '
