@@ -17,7 +17,7 @@ setopt AUTO_CD
 setopt histignorespace
 
 # oh-my-zsh plugins
-plugins=(git ssh-agent docker kubectl)
+plugins=(git ssh-agent docker kubectl npm)
 
 source ~/.antigen/antigen.zsh
 
@@ -69,6 +69,7 @@ alias kdiff="kitty +kitten diff"
 alias gl="git log --oneline --graph"
 alias gd="git diff -- ':!package-lock.json' ':!yarn.lock'"
 alias git-root='cd $(git rev-parse --show-toplevel)'
+alias gca="git commit --amend"
 
 git-branch-cleanup() {
     git branch --merged | grep -v "\*" | grep -v master | grep -v dev | grep -v staging | grep -v main | xargs -n 1 git branch -d
@@ -156,6 +157,15 @@ lg() {
     fi
 }
 
+
+notify() {
+  if [ $? -eq 0 ]; then
+    osascript -e 'display notification "Command worked" with title "Success"'
+  else
+    osascript -e 'display notification "Command failed" with title "Failed"'
+  fi
+}
+
 export XDG_CONFIG_HOME=$HOME/.config
 
 
@@ -176,3 +186,5 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 
 # to make watch work with alises, *shrug* https://unix.stackexchange.com/questions/25327/watch-command-alias-expansion
 alias watch='watch '
+alias gb="git for-each-ref --sort=committerdate refs/heads/ --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(color:red)%(objectname:short)%(color:reset) - %(contents:subject) - %(authorname) (%(color:green)%(committerdate:relative)%(color:reset))'"
+

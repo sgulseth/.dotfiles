@@ -63,4 +63,12 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     if ! [ -x "$(command -v dive)" ]; then
         brew install dive
     fi
+
+    if ! [ -x "$(command -v rg)" ]; then
+        brew install rg
+    fi
+
+    if ! [ -x "$(command -v fd)" ]; then
+        brew install fd
+    fi
 fi

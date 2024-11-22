@@ -1,7 +1,20 @@
 \set QUIET 1
 \pset null '(null)'
 
-\set PROMPT1 '%[%033[1m%][%/] # '
+-- Prompts
+-- Prompt1 / Prompt2 / Prompt3
+-- %M : server
+-- %m : host name
+-- %> : port
+-- %n : user
+-- %/ : current database
+-- %~ : like %/ but ~ for default database
+-- %# : '#' if superuser, '>' otherwise
+-- %R
+-- %x
+-- %[...%] : terminal control characters
+
+\set PROMPT1 '%[%033[1m%][%/]@%M # '
 -- SELECT * FROM<enter>. %R shows what type of input it expects.
 \set PROMPT2 '[more] %R > '
 
@@ -12,4 +25,11 @@
 \set HISTFILE ~/.psql_history- :DBNAME
 \set HISTCONTROL ignoredups
 \set COMP_KEYWORD_CASE upper
+
+
+\set eav 'EXPLAIN ANALYZE VERBOSE'
+
+-- Queries
+\set queries  'select current_timestamp - query_start as runtime,pid,datname,usename,query from pg_stat_activity where query != \'<IDLE>\' order by 1 desc; '
+
 \unset QUIET
