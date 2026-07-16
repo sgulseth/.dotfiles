@@ -24,12 +24,11 @@ mkdir -p ~/.config/{,pgcli}
 ln -s ~/.dotfiles/zsh/zshrc ~/.zshrc
 ln -s ~/.dotfiles/tmux/tmux.conf ~/.tmux.conf
 ln -s ~/.dotfiles/tmuxinator ~/.tmuxinator
-ln -s ~/.dotfiles/vim/vimrc ~/.vimrc
 ln -s ~/.dotfiles/psql/psqlrc ~/.psqlrc
-ln -s ~/.dotfiles/vim/vimrc_neocomplcache ~/.vim/.vimrc_neocomplcache
 ln -s ~/.dotfiles/nvim ~/.config/nvim
 ln -s ~/.dotfiles/git/config ~/.gitconfig
 ln -s ~/.dotfiles/git/ignore ~/.gitignore
+ln -s ~/.dotfiles/ghostty/config ~/Library/Application\ Support/com.mitchellh.ghostty/config
 
 rm ~/.config/pgcli/config && ln -s ~/.dotfiles/pgcli/config ~/.config/pgcli/config
 
