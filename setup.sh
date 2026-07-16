@@ -20,11 +20,6 @@ if [ -f ~/.psqlrc ]; then
     mv ~/.psqlrc ~/.psqlrc-old
 fi
 
-if [ -d ~/.tmuxinator ]; then
-    echo "tmuxinator dir exists. Backing up."
-    mv ~/.tmuxinator ~/.tmuxinator-old
-fi
-
 if [ ! -d ~/.antigen ]; then
     git clone https://github.com/zsh-users/antigen.git ~/.antigen
 fi
