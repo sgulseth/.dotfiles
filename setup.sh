@@ -10,11 +10,6 @@ if [ -f ~/.tmux.conf ]; then
     mv ~/.tmux.conf ~/.tmux.conf-old
 fi
 
-if [ -f ~/.vimrc ]; then
-    echo "vimrc file exists. Backing up."
-    mv ~/.vimrc ~/.vimrc-old
-fi
-
 if [ -f ~/.psqlrc ]; then
     echo "psqlrc file exists. Backing up."
     mv ~/.psqlrc ~/.psqlrc-old
@@ -24,7 +19,6 @@ if [ ! -d ~/.antigen ]; then
     git clone https://github.com/zsh-users/antigen.git ~/.antigen
 fi
 
-mkdir -p ~/.vim
 mkdir -p ~/.config/{,pgcli}
 
 ln -s ~/.dotfiles/zsh/zshrc ~/.zshrc
