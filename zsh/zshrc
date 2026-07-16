@@ -53,23 +53,17 @@ export PATH=$PATH:/usr/local/bin:$HOME/.dotfiles/bin
 export GOPROXY=https://proxy.golang.org
 export HOMEBREW_NO_AUTO_UPDATE=1
 
-# kube-ps1
-#KUBE_PS1_SYMBOL_DEFAULT='' \
-#    KUBE_PS1_PREFIX="%{${fg[blue]}%}k8s%{$reset_color%}" \
-#    KUBE_PS1_SUFFIX='' \
-#    KUBE_PS1_SEPARATOR='' \
-#    RPROMPT='$(kube_ps1) [%D{%L:%M:%S}]'
-#source ~/.dotfiles/zsh/kube-ps1/kube-ps1.sh
-
 
 # Aliases
 source ~/.dotfiles/zsh/kubectl-aliases/.kubectl_aliases
 
 alias kdiff="kitty +kitten diff"
-alias gl="git log --oneline --graph"
+alias gl="git lg"
 alias gd="git diff -- ':!package-lock.json' ':!yarn.lock'"
 alias git-root='cd $(git rev-parse --show-toplevel)'
-alias gca="git commit --amend"
+alias gca="git commit --amend --no-edit"
+alias gcam="git commit --amend --edit"
+alias grc="git rc"
 
 git-branch-cleanup() {
     git branch --merged | grep -v "\*" | grep -v master | grep -v dev | grep -v staging | grep -v main | xargs -n 1 git branch -d
@@ -169,12 +163,6 @@ notify() {
 export XDG_CONFIG_HOME=$HOME/.config
 
 
-
-# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
-export PATH="$PATH:$HOME/.rvm/bin"
-export VOLTA_HOME="$HOME/.volta"
-export PATH="$VOLTA_HOME/bin:$PATH"
-
 # bun completions
 [ -s "/Users/sgulseth/.bun/_bun" ] && source "/Users/sgulseth/.bun/_bun"
 
@@ -182,9 +170,25 @@ export PATH="$VOLTA_HOME/bin:$PATH"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
-[[ -s "/Users/sgulseth/.gvm/scripts/gvm" ]] && source "/Users/sgulseth/.gvm/scripts/gvm"
-
 # to make watch work with alises, *shrug* https://unix.stackexchange.com/questions/25327/watch-command-alias-expansion
 alias watch='watch '
 alias gb="git for-each-ref --sort=committerdate refs/heads/ --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(color:red)%(objectname:short)%(color:reset) - %(contents:subject) - %(authorname) (%(color:green)%(committerdate:relative)%(color:reset))'"
 
+eval "$(ruby ~/.dotfiles/bin/try.rb init ~/workspace/src/sindre.dev/scratch)"
+
+export XCODE_APP="$(dirname "$(dirname "$(xcode-select -p)")")"
+export SAFEHOUSE_ADD_DIRS_RO="$HOME/.gitconfig:$HOME/.gitignore:$XCODE_APP:$HOME/.claude:$HOME/.agents:/nix/store/:$HOME/.local/share/direnv:$HOME/workspace/src/github.com/sanity-io/sanity-nix-config:/nix/var/nix/profiles/default"
+export SAFEHOUSE_ADD_DIRS="$HOME/.swiftpm:$HOME/Library/Caches:$HOME/Library/org.swift.swiftpm:$HOME/Library/Developer/Xcode/DerivedData:$TMPDIR::$HOME/.cache:$GOPATH/pkg"
+export SAFEHOUSE_ENV_PASS=NIX_APPLE_SDK_VERSION,NIX_BINTOOLS,NIX_BINTOOLS_WRAPPER_TARGET_HOST_arm64_apple_darwin,NIX_CC,NIX_CC_WRAPPER_TARGET_HOST_arm64_apple_darwin,NIX_CFLAGS_COMPILE,NIX_DONT_SET_RPATH,NIX_DONT_SET_RPATH_FOR_BUILD,NIX_ENFORCE_NO_NATIVE,NIX_HARDENING_ENABLE,NIX_IGNORE_LD_THROUGH_GCC,NIX_LDFLAGS,NIX_NO_SELF_RPATH,NIX_PKG_CONFIG_WRAPPER_TARGET_HOST_arm64_apple_darwin,NIX_PROFILES,NIX_SSL_CERT_FILE,NIX_STORE,GOPATH
+
+claude() {safehouse claude --dangerously-skip-permissions $argv;}
+codex() {safehouse codex --dangerously-bypass-approvals-and-sandbox $argv;}
+opencode() {OPENCODE_PERMISSION='{"*":"allow"}' safehouse opencode "$@";}
+pi() {safehouse pi "$@";}
+
+
+# Added by microsandbox installer
+export PATH="$HOME/.local/bin:$PATH"
+export DYLD_LIBRARY_PATH="$HOME/.local/lib:$DYLD_LIBRARY_PATH"
+eval "$(direnv hook zsh)"
+export PATH="/Users/sgulseth/workspace/src/github.com/sanity-io/sanity-nix-config/.devenv/bin:$PATH"
