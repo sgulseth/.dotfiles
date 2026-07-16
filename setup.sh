@@ -34,6 +34,8 @@ ln -s ~/.dotfiles/vim/vimrc ~/.vimrc
 ln -s ~/.dotfiles/psql/psqlrc ~/.psqlrc
 ln -s ~/.dotfiles/vim/vimrc_neocomplcache ~/.vim/.vimrc_neocomplcache
 ln -s ~/.dotfiles/nvim ~/.config/nvim
+ln -s ~/.dotfiles/git/config ~/.gitconfig
+ln -s ~/.dotfiles/git/ignore ~/.gitignore
 
 rm ~/.config/pgcli/config && ln -s ~/.dotfiles/pgcli/config ~/.config/pgcli/config
 
