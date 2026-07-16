@@ -71,4 +71,6 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     if ! [ -x "$(command -v fd)" ]; then
         brew install fd
     fi
+
+    launchctl setenv XDG_CONFIG_HOME ~/.config
 fi
